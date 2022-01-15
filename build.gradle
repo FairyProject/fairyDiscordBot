@@ -1,0 +1,27 @@
+plugins {
+    id "java"
+    id "io.fairyproject" version "1.0.0b5"
+}
+
+group "dev.imanity.discordbot"
+version "0.0.1"
+
+repositories {
+    mavenCentral()
+}
+
+fairy {
+    name = "FairyDiscordBot"
+    mainPackage = "dev.imanity.discordbot.example"
+    version = "0.0.1"
+
+    platform("app")
+    module("discord", "0.0.1b16")
+    module("command", "0.0.1b4")
+//    module("storage", "0.0.1b2")
+}
+
+dependencies {
+    compileOnly "org.projectlombok:lombok:1.18.22"
+    annotationProcessor "org.projectlombok:lombok:1.18.22"
+}

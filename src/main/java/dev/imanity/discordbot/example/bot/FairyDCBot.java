@@ -15,7 +15,7 @@ public class FairyDCBot extends DCBot {
     }
 
     @Override
-    public @NotNull EnumSet<GatewayIntent> getGatewayIntents() {
+    public @NotNull EnumSet<GatewayIntent> createGatewayIntents() {
         return EnumSet.allOf(GatewayIntent.class);
     }
 }

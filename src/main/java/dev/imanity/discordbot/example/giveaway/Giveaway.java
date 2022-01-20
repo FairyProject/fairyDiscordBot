@@ -2,7 +2,6 @@ package dev.imanity.discordbot.example.giveaway;
 
 import dev.imanity.discordbot.example.bot.FairyDCBot;
 import io.fairyproject.container.Autowired;
-import lombok.Builder;
 import lombok.Data;
 import net.dv8tion.jda.api.entities.TextChannel;
 

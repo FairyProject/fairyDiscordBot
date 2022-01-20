@@ -8,12 +8,13 @@ import io.fairyproject.command.annotation.Command;
 import io.fairyproject.container.Component;
 import io.fairyproject.discord.DCBot;
 import io.fairyproject.discord.button.DCButton;
+import io.fairyproject.discord.channel.DCMessageChannel;
 import io.fairyproject.discord.command.DCCommandContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -35,7 +36,8 @@ public class GiveawayCommand extends BaseCommand {
         final User author = commandContext.getAuthor();
         final Giveaway giveaway = new Giveaway(id);
         final DCBot bot = commandContext.getBot();
-        final MessageChannel channel = commandContext.getChannel();
+        final DCMessageChannel channel = commandContext.getChannel();
+        final GiveawayBuilder giveawayBuilder = new GiveawayBuilder(channel, giveaway, author, bot, timezone);
 
         channel
                 .sendMessage(new MessageBuilder()
@@ -71,20 +73,24 @@ public class GiveawayCommand extends BaseCommand {
                                         .label("Drop Giveaway")
                                         .emojiUnicode("⛔")
                                         .action((ignored, buttonInteraction) -> {
+                                            giveawayBuilder.setActive(false);
                                             buttonInteraction.getMessage().delete().queue();
                                         }).build().toActionRow(bot)
                         )
                         .build()
                 ).queue(message -> {
-                    final GiveawayBuilder giveawayBuilder = new GiveawayBuilder(channel, giveaway, author, bot, message, timezone);
+                    giveawayBuilder.setMessage(message);
                     askChannel(giveawayBuilder);
                 });
     }
 
     private void askChannel(GiveawayBuilder giveawayBuilder) {
         giveawayBuilder.getCommandChannel().sendMessageEmbeds(MessageConstants.fromSelectChannel(giveawayBuilder.getGiveaway()))
-                .queue(ignored -> giveawayBuilder.getBot().getNextMessageReader().read(giveawayBuilder.getCommandChannel(), giveawayBuilder.getAuthor())
+                .queue(ignored -> giveawayBuilder.getCommandChannel().readNextMessage(giveawayBuilder.getAuthor())
                         .whenComplete((message, throwable) -> {
+                            if (!giveawayBuilder.isActive()) {
+                                return;
+                            }
                             if (message == null) {
                                 return;
                             }
@@ -103,8 +109,11 @@ public class GiveawayCommand extends BaseCommand {
 
     private void askDeadline(GiveawayBuilder giveawayBuilder) {
         giveawayBuilder.getCommandChannel().sendMessageEmbeds(MessageConstants.fromSelectDeadline(giveawayBuilder.getGiveaway()))
-                .queue(ignored -> giveawayBuilder.getBot().getNextMessageReader().read(giveawayBuilder.getCommandChannel(), giveawayBuilder.getAuthor())
+                .queue(ignored -> giveawayBuilder.getCommandChannel().readNextMessage(giveawayBuilder.getAuthor())
                         .whenComplete((message, throwable) -> {
+                            if (!giveawayBuilder.isActive()) {
+                                return;
+                            }
                             if (message == null) {
                                 return;
                             }
@@ -130,6 +139,9 @@ public class GiveawayCommand extends BaseCommand {
         Runnable runnable = () -> {
             giveawayBuilder.getBot().getNextMessageReader().read(giveawayBuilder.getCommandChannel(), giveawayBuilder.getAuthor())
                     .whenComplete((message, throwable) -> {
+                        if (!giveawayBuilder.isActive()) {
+                            return;
+                        }
                         if (message == null) {
                             return;
                         }
@@ -154,12 +166,17 @@ public class GiveawayCommand extends BaseCommand {
     @Getter
     private static class GiveawayBuilder {
 
-        private final MessageChannel commandChannel;
+        private final DCMessageChannel commandChannel;
         private final Giveaway giveaway;
         private final User author;
         private final DCBot bot;
-        private final Message message;
         private final ZoneId zoneId;
+
+        @Setter
+        private Message message;
+
+        @Setter
+        private boolean active = true;
 
     }
 

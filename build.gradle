@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "io.fairyproject" version "1.0.0b5"
+    id "io.fairyproject" version "1.0.0b6"
 }
 
 group "dev.imanity.discordbot"
@@ -16,7 +16,7 @@ fairy {
     version = "0.0.1"
 
     platform("app")
-    module("discord", "0.0.1b16")
+    module("discord", "0.0.1b18")
     module("command", "0.0.1b4")
 //    module("storage", "0.0.1b2")
 }

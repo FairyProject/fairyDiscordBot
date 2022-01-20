@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "io.fairyproject" version "1.0.0b6"
+    id "io.fairyproject" version "1.0.0b7"
 }
 
 group "dev.imanity.discordbot"

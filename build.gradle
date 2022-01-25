@@ -15,10 +15,12 @@ fairy {
     mainPackage = "dev.imanity.discordbot.example"
     version = "0.0.1"
 
+    fairyVersion = "0.5.1b25"
+
     platform("app")
-    module("discord", "0.0.1b18")
+    module("discord", "0.0.1b19")
     module("command", "0.0.1b4")
-//    module("storage", "0.0.1b2")
+    module("storage", "0.0.1b3")
 }
 
 dependencies {
